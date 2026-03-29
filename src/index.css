@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+/* ── Custom Theme ─────────────────────────────────────── */
+@theme {
+  --font-sans: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+
+  /* Surfaces */
+  --color-bg: #0a0a0f;
+  --color-bg-elevated: #12131a;
+  --color-bg-subtle: #1a1b25;
+  --color-bg-input: #161720;
+
+  /* Text */
+  --color-text-primary: #edeef0;
+  --color-text-secondary: #7a7f8a;
+  --color-text-muted: #50545e;
+
+  /* Borders */
+  --color-border-default: rgba(255, 255, 255, 0.06);
+  --color-border-hover: rgba(255, 255, 255, 0.12);
+
+  /* Accent — fintech teal */
+  --color-accent: #00d4aa;
+  --color-accent-soft: #00b894;
+  --color-accent-bg: rgba(0, 212, 170, 0.08);
+  --color-accent-border: rgba(0, 212, 170, 0.25);
+
+  /* Priority colors */
+  --color-priority-high: #ef4444;
+  --color-priority-medium: #f59e0b;
+  --color-priority-low: #6366f1;
+
+  /* Danger */
+  --color-danger: #ef4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.08);
+  --color-danger-border: rgba(239, 68, 68, 0.25);
+
+  /* Shadows */
+  --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 24px rgba(0, 212, 170, 0.12), 0 0 48px rgba(0, 212, 170, 0.06);
+
+  /* Animations */
+  --animate-card-in: card-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-fade-in: fade-in 0.2s ease-out both;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Base Layer ───────────────────────────────────────── */
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply m-0 bg-bg font-sans text-text-secondary;
+  }
+
+  #root {
+    @apply mx-auto flex min-h-svh w-full max-w-3xl flex-col px-6 pb-16 max-sm:px-4;
+  }
+
+  h1, h2, h3 {
+    @apply m-0 font-sans text-text-primary;
+  }
+
+  p {
+    @apply m-0;
+  }
+}
+
+/* ── Heading gradient ─────────────────────────────────── */
+@utility heading-gradient {
+  background: linear-gradient(135deg, #edeef0 0%, #edeef0 40%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Reduced Motion ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
