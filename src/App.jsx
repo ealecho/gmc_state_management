@@ -1,14 +1,14 @@
-import { useState, useEffect, useCallback } from 'react'
-import { loadTasks, saveTasks } from './utils/storage'
-import TaskForm from './components/TaskForm'
-import TaskList from './components/TaskList'
-import Filter from './components/Filter'
+import { useState, useEffect, useCallback } from "react";
+import { loadTasks, saveTasks } from "./utils/storage";
+import TaskForm from "./components/TaskForm";
+import TaskList from "./components/TaskList";
+import Filter from "./components/Filter";
 
 /**
  * PRIORITY_ORDER — Numeric weight for sorting tasks by priority.
  * Lower number = higher priority = appears first.
  */
-const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 }
+const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 };
 
 /**
  * SEED_TASKS — Default tasks shown on first visit (empty localStorage).
@@ -17,41 +17,45 @@ const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 }
 const SEED_TASKS = [
   {
     id: 1,
-    name: 'Set up project architecture',
-    description: 'Initialize the React app with Vite, Tailwind CSS, and component structure.',
-    priority: 'high',
+    name: "Set up project architecture",
+    description:
+      "Initialize the React app with Vite, Tailwind CSS, and component structure.",
+    priority: "high",
     dueDate: null,
     completed: true,
     createdAt: Date.now() - 3600000,
   },
   {
     id: 2,
-    name: 'Implement localStorage persistence',
-    description: 'Save tasks to localStorage on every change and load them on app init.',
-    priority: 'high',
+    name: "Implement localStorage persistence",
+    description:
+      "Save tasks to localStorage on every change and load them on app init.",
+    priority: "high",
     dueDate: null,
     completed: false,
     createdAt: Date.now() - 1800000,
   },
   {
     id: 3,
-    name: 'Add filtering and sorting',
-    description: 'Filter tasks by completion status. Sort by priority, date created, or due date.',
-    priority: 'medium',
+    name: "Add filtering and sorting",
+    description:
+      "Filter tasks by completion status. Sort by priority, date created, or due date.",
+    priority: "medium",
     dueDate: null,
     completed: false,
     createdAt: Date.now() - 900000,
   },
   {
     id: 4,
-    name: 'Write README documentation',
-    description: 'Explain how to run the app locally and describe the component architecture.',
-    priority: 'low',
+    name: "Write README documentation",
+    description:
+      "Explain how to run the app locally and describe the component architecture.",
+    priority: "low",
     dueDate: null,
     completed: false,
     createdAt: Date.now(),
   },
-]
+];
 
 /**
  * App — Root component and single source of truth for task state.
@@ -65,17 +69,17 @@ const SEED_TASKS = [
  */
 function App() {
   // ── Core State ──────────────────────────────────────────
-  const [tasks, setTasks] = useState(() => loadTasks(SEED_TASKS))
-  const [showForm, setShowForm] = useState(false)
+  const [tasks, setTasks] = useState(() => loadTasks(SEED_TASKS));
+  const [showForm, setShowForm] = useState(false);
 
   // ── Filter & Sort State ─────────────────────────────────
-  const [statusFilter, setStatusFilter] = useState('all')
-  const [sortBy, setSortBy] = useState('newest')
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
 
   // ── Persist to localStorage whenever tasks change ───────
   useEffect(() => {
-    saveTasks(tasks)
-  }, [tasks])
+    saveTasks(tasks);
+  }, [tasks]);
 
   // ── Task Mutations ──────────────────────────────────────
 
@@ -86,66 +90,67 @@ function App() {
       ...data,
       completed: false,
       createdAt: Date.now(),
-    }
-    setTasks((prev) => [newTask, ...prev])
-    setShowForm(false)
-  }, [])
+    };
+    setTasks((prev) => [newTask, ...prev]);
+    setShowForm(false);
+  }, []);
 
   /** Toggle the completed status of a task. */
   const toggleTask = useCallback((id) => {
     setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
-    )
-  }, [])
+      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
+    );
+  }, []);
 
   /** Edit an existing task's data (name, description, priority, dueDate). */
   const editTask = useCallback((id, data) => {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, ...data } : t))
-    )
-  }, [])
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...data } : t)));
+  }, []);
 
   /** Delete a task by id. */
   const deleteTask = useCallback((id) => {
-    setTasks((prev) => prev.filter((t) => t.id !== id))
-  }, [])
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   // ── Derived: Filtered & Sorted ──────────────────────────
 
   const filteredAndSorted = (() => {
     // 1. Filter by status
-    let result = tasks
-    if (statusFilter === 'active') {
-      result = result.filter((t) => !t.completed)
-    } else if (statusFilter === 'completed') {
-      result = result.filter((t) => t.completed)
+    let result = tasks;
+    if (statusFilter === "active") {
+      result = result.filter((t) => !t.completed);
+    } else if (statusFilter === "completed") {
+      result = result.filter((t) => t.completed);
     }
 
     // 2. Sort
     result = [...result].sort((a, b) => {
       switch (sortBy) {
-        case 'oldest':
-          return a.createdAt - b.createdAt
-        case 'priority':
-          return (PRIORITY_ORDER[a.priority] ?? 1) - (PRIORITY_ORDER[b.priority] ?? 1)
-        case 'dueDate': {
+        case "oldest":
+          return a.createdAt - b.createdAt;
+        case "priority":
+          return (
+            (PRIORITY_ORDER[a.priority] ?? 1) -
+            (PRIORITY_ORDER[b.priority] ?? 1)
+          );
+        case "dueDate": {
           // Tasks without due dates go to the end
-          if (!a.dueDate && !b.dueDate) return 0
-          if (!a.dueDate) return 1
-          if (!b.dueDate) return -1
-          return a.dueDate.localeCompare(b.dueDate)
+          if (!a.dueDate && !b.dueDate) return 0;
+          if (!a.dueDate) return 1;
+          if (!b.dueDate) return -1;
+          return a.dueDate.localeCompare(b.dueDate);
         }
         default: // newest
-          return b.createdAt - a.createdAt
+          return b.createdAt - a.createdAt;
       }
-    })
+    });
 
-    return result
-  })()
+    return result;
+  })();
 
   // ── Counts for the header ───────────────────────────────
-  const activeCount = tasks.filter((t) => !t.completed).length
-  const completedCount = tasks.filter((t) => t.completed).length
+  const activeCount = tasks.filter((t) => !t.completed).length;
+  const completedCount = tasks.filter((t) => t.completed).length;
 
   return (
     <main className="flex flex-col gap-8 pt-12 max-sm:pt-8">
@@ -155,7 +160,7 @@ function App() {
           To-Do List
         </h1>
         <p className="text-sm text-text-muted">
-          {activeCount} active &middot; {completedCount} completed &middot;{' '}
+          {activeCount} active &middot; {completedCount} completed &middot;{" "}
           {tasks.length} total
         </p>
       </header>
@@ -178,7 +183,7 @@ function App() {
             aria-expanded={showForm}
             aria-controls="add-task-form"
           >
-            {showForm ? 'Cancel' : '+ Add Task'}
+            {showForm ? "Cancel" : "+ Add Task"}
           </button>
         </div>
 
@@ -200,7 +205,7 @@ function App() {
         />
       </section>
     </main>
-  )
+  );
 }
 
-export default App
+export default App;
